@@ -62,7 +62,9 @@ $installdefs = array (
 	'image_dir' => '<basepath>/icons',
 	'copy' =>
 		array (
-			array (
+			
+            /** Module Files **/
+            array (
 				'from' => '<basepath>/install_dir/modules/Workflows',
 				'to' => 'modules/Workflows',
 			),
@@ -100,9 +102,74 @@ $installdefs = array (
 				'from' => '<basepath>/install_dir/modules/gcoop_notificaciones',
 				'to' => 'modules/gcoop_notificaciones',
 			),
+   			
+            /** Additional Files **/
             
-            
+            array(
+                    'from' => '<basepath>/install_dir/custom/include/gcoop_global_funcs.php',
+                    'to' => 'custom/include/gcoop_global_funcs.php',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/custom/include/javascript/jquery.js',
+                    'to' => 'custom/include/javascript/jquery.js',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/css/style.css',
+                    'to' => 'themes/Sugar5/css/style.css',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/images/alert.png',
+                    'to' => 'themes/Sugar5/images/alert.png',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/images/error.png',
+                    'to' => 'themes/Sugar5/images/error.png',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/images/info.png',
+                    'to' => 'themes/Sugar5/images/info.png',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/images/success.png',
+                    'to' => 'themes/Sugar5/images/success.png',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/images/working.gif',
+                    'to' => 'themes/Sugar5/images/working.gif',
+                 ),
+            array(
+                    'from' => '<basepath>/install_dir/themes/Sugar5/tpls/header.tpl',
+                    'to' => 'themes/Sugar5/tpls/header.tpl',
+                 ),
             /** NOT UPGRADE SAFE CODE - try to make this as upgrade safe as possible */
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/themes/Sugar5/tpls/header.tpl',
+                    'to' => 'themes/Sugar5/tpls/header.tpl',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/data/SugarBean.php',
+                    'to' => 'data/SugarBean.php',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/include/EditView/EditView2.php',
+                    'to' => 'include/EditView/EditView2.php',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/include/MVC/View/SugarView.php',
+                    'to' => 'include/MVC/View/SugarView.php',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/include/MVC/Controller/SugarController.php',
+                    'to' => 'include/MVC/Controller/SugarController.php',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/include/SearchForm/SearchForm2.php',
+                    'to' => 'include/SearchForm/SearchForm2.php',
+                 ),
+            array(
+                    'from' => '<basepath>install_dir/notupgradesafe/include/entryPoint.php',
+                    'to' => 'include/entryPoint.php',
+                 ),
 		),
 	'layoutdefs' =>
 		array (
@@ -119,109 +186,10 @@ $installdefs = array (
 				'to_module' => 'application',
 				'language' => 'en_us',
 			),
-			array(
-				'from'=> '<basepath>/install_dir/language/modules/Administration/en_us.admin.php',
-				'to_module'=> 'Administration',
-				'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Accounts/mod_strings_en_us.php',
-				  'to_module'=> 'Accounts',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/ACLActions/mod_strings_en_us.php',
-				  'to_module'=> 'ACLActions',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Bugs/mod_strings_en_us.php',
-				  'to_module'=> 'Bugs',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Calendar/mod_strings_en_us.php',
-				  'to_module'=> 'Calendar',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Calls/mod_strings_en_us.php',
-				  'to_module'=> 'Calls',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Campaigns/mod_strings_en_us.php',
-				  'to_module'=> 'Campaigns',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Cases/mod_strings_en_us.php',
-				  'to_module'=> 'Cases',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Contacts/mod_strings_en_us.php',
-				  'to_module'=> 'Contacts',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Documents/mod_strings_en_us.php',
-				  'to_module'=> 'Documents',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Emails/mod_strings_en_us.php',
-				  'to_module'=> 'Emails',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/EmailTemplates/mod_strings_en_us.php',
-				  'to_module'=> 'EmailTemplates',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Leads/mod_strings_en_us.php',
-				  'to_module'=> 'Leads',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Meetings/mod_strings_en_us.php',
-				  'to_module'=> 'Meetings',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Notes/mod_strings_en_us.php',
-				  'to_module'=> 'Notes',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Opportunities/mod_strings_en_us.php',
-				  'to_module'=> 'Opportunities',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Project/mod_strings_en_us.php',
-				  'to_module'=> 'Project',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/ProjectTask/mod_strings_en_us.php',
-				  'to_module'=> 'ProjectTask',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/ProspectLists/mod_strings_en_us.php',
-				  'to_module'=> 'ProspectLists',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Prospects/mod_strings_en_us.php',
-				  'to_module'=> 'Prospects',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Tasks/mod_strings_en_us.php',
-				  'to_module'=> 'Tasks',
-				  'language'=>'en_us'
-			),
-			array('from'=> '<basepath>/install_dir/language/modules/Users/mod_strings_en_us.php',
-				  'to_module'=> 'Users',
-				  'language'=>'en_us'
-			),
-			//group layouts
-			array('from'=> '<basepath>/install_dir/language/modules/ModuleBuilder/mod_strings_en_us.php',
-				  'to_module'=> 'ModuleBuilder',
-				  'language'=>'en_us'
-			),
-		/** END ENGLISH en_us */
 		),
 
 	'administration' =>
 		array(
-			array(
-				'from'=>'<basepath>/install_dir/modules/Administration/securitygroupsadminoption.php',
-				'to' => 'modules/Administration/securitygroupsadminoption.php',
-			),
 		),
 	'menu'=> array(
 	),
