@@ -137,37 +137,33 @@ $installdefs = array (
                     'from' => '<basepath>/install_dir/themes/Sugar5/images/working.gif',
                     'to' => 'themes/Sugar5/images/working.gif',
                  ),
-            array(
-                    'from' => '<basepath>/install_dir/themes/Sugar5/tpls/header.tpl',
-                    'to' => 'themes/Sugar5/tpls/header.tpl',
-                 ),
             /** NOT UPGRADE SAFE CODE - try to make this as upgrade safe as possible */
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/themes/Sugar5/tpls/header.tpl',
+                    'from' => '<basepath>/install_dir/notupgradesafe/themes/Sugar5/tpls/header.tpl',
                     'to' => 'themes/Sugar5/tpls/header.tpl',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/data/SugarBean.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/data/SugarBean.php',
                     'to' => 'data/SugarBean.php',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/include/EditView/EditView2.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/include/EditView/EditView2.php',
                     'to' => 'include/EditView/EditView2.php',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/include/MVC/View/SugarView.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/include/MVC/View/SugarView.php',
                     'to' => 'include/MVC/View/SugarView.php',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/include/MVC/Controller/SugarController.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/include/MVC/Controller/SugarController.php',
                     'to' => 'include/MVC/Controller/SugarController.php',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/include/SearchForm/SearchForm2.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/include/SearchForm/SearchForm2.php',
                     'to' => 'include/SearchForm/SearchForm2.php',
                  ),
             array(
-                    'from' => '<basepath>install_dir/notupgradesafe/include/entryPoint.php',
+                    'from' => '<basepath>/install_dir/notupgradesafe/include/entryPoint.php',
                     'to' => 'include/entryPoint.php',
                  ),
 		),
