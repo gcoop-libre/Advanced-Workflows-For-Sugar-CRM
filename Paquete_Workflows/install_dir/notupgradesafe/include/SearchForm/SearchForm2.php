@@ -229,10 +229,6 @@ require_once('include/EditView/EditView2.php');
         $this->th->ss->assign('templateMeta', $this->searchdefs['templateMeta']);
         $this->th->ss->assign('HAS_ADVANCED_SEARCH', !empty($this->searchdefs['layout']['advanced_search']));
         $this->th->ss->assign('displayType', $this->displayType);
-		/* BEGIN - SECURITY GROUPS */ 
-		$groupLayout = "";
-		if(!empty($_SESSION['groupLayout'])) $groupLayout = $_SESSION['groupLayout'];
-		/* END - SECURITY GROUPS */ 
         // return the form of the shown tab only
         if($this->showSavedSearchesOptions){
             $this->th->ss->assign('SAVED_SEARCHES_OPTIONS', $this->displaySavedSearchSelect());
@@ -243,13 +239,7 @@ require_once('include/EditView/EditView2.php');
         $return_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchForm_'.$this->parsedView, $this->tpl);
         if($header){
 			$this->th->ss->assign('return_txt', $return_txt);
-			/* BEGIN - SECURITY GROUPS */ 
-			$_SESSION['groupLayout'] = $groupLayout;
-			/* END - SECURITY GROUPS */ 
 			$header_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormHeader', 'include/SearchForm/tpls/header.tpl');
-            /* BEGIN - SECURITY GROUPS */ 
-			$_SESSION['groupLayout'] = $groupLayout;
-			/* END - SECURITY GROUPS */ 
             //pass in info to render the select dropdown below the form
             $footer_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormFooter', 'include/SearchForm/tpls/footer.tpl');
 			$return_txt = $header_txt.$footer_txt;
@@ -377,6 +367,9 @@ require_once('include/EditView/EditView2.php');
 						$value = $function_name($this->seed, $name, $value, $this->view);
 						$this->fieldDefs[$name.'_'.$this->parsedView]['value'] = $value;
 					}else{
+						if(!empty($this->fieldDefs[$name.'_'.$this->parsedView]['function']['include'])){
+								require_once($this->fieldDefs[$name.'_'.$this->parsedView]['function']['include']);
+						}
 						if(!isset($function['params']) || !is_array($function['params'])) {
 							$this->fieldDefs[$name.'_'.$this->parsedView]['options'] = $function_name($this->seed, $name, $value, $this->view);
 						} else {

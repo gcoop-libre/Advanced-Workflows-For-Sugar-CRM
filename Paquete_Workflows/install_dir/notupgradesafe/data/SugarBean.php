@@ -1566,10 +1566,6 @@ class SugarBean
             // let subclasses save related field changes
             $this->save_relationship_changes($isUpdate);
 
-		/* BEGIN - SECURITY GROUPS - inheritance */ 
-		require_once('modules/SecurityGroups/SecurityGroup.php');
-		SecurityGroup::inherit($this,$isUpdate);
-		/* END - SECURITY GROUPS */ 
         //If we aren't in setup mode and we have a current user and module, then we track
         if(isset($GLOBALS['current_user']) && isset($this->module_dir))
         {
@@ -2318,23 +2314,6 @@ function save_relationship_changes($is_update, $exclude=array())
             $query .= $custom_join['join'];
         }
 
-		/* BEGIN - SECURITY GROUPS */
-		//NOTE: add_list_count_joins is no longer used so this could be removed
-    	global $current_user, $sugar_config;
-    	if($this->module_dir == 'Users' && !is_admin($current_user)
-				&& isset($sugar_config['securitysuite_filter_user_list'])
-				&& $sugar_config['securitysuite_filter_user_list'] == true
-    	) {
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		$query .= SecurityGroup::getGroupUsersJoin($current_user->id);
-    	} else 
-    	if($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, 'list') )
-    	{
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		global $current_user;
-    		$query .= SecurityGroup::getGroupJoin($this->table_name,$this->module_dir,$current_user->id);
-		}
-    	/* END - SECURITY GROUPS */
     }
 
     /**
@@ -2355,19 +2334,7 @@ function save_relationship_changes($is_update, $exclude=array())
         $query = preg_replace($pattern, $replacement, $query);
         //handle distinct clause
         $star = '*';
-        /* BEGIN - SECURITY GROUPS */
-        //detect distinct secr.record_id  or distinct secg.id and ignore them
-        //when done add note to SecurityGroup->getGroupJoin about the dependency
-        /**
         if(substr_count(strtolower($query), 'distinct')){
-        */
-		if(substr_count(strtolower($query), 'distinct') >
-			(substr_count(strtolower($query), 'distinct secr.record_id')
-			+ substr_count(strtolower($query), 'distinct secg.id')
-			+ substr_count(strtolower($query), 'distinct sec.user_id')
-			)
-		){
-        /* END - SECURITY GROUPS */
             if (!empty($this->seed) && !empty($this->seed->table_name ))
                 $star = 'DISTINCT ' . $this->seed->table_name . '.id';
             else
@@ -2450,45 +2417,6 @@ function save_relationship_changes($is_update, $exclude=array())
                 }
             }
         }
-		/* BEGIN - SECURITY GROUPS */
-		/**
-		//not needed since calling create_new_list_query
-    	if($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, 'list') )
-    	{
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		global $current_user;
-    		$owner_where = $this->getOwnerWhere($current_user->id);
-    		$group_where = SecurityGroup::getGroupWhere($this->table_name,$this->module_dir,$current_user->id);
-			if(!empty($owner_where)){
-				if(empty($where))
-				{
-					$where = " (".  $owner_where." or ".$group_where.") ";
-				} else {
-					$where .= " AND (".  $owner_where." or ".$group_where.") ";
-				}
-			} else {
-				$where .= ' AND '.  $group_where;
-			}
-    	}
-			
-    	global $current_user, $sugar_config;
-    	if($this->module_dir == 'Users' && !is_admin($current_user)
-				&& isset($sugar_config['securitysuite_filter_user_list'])
-				&& $sugar_config['securitysuite_filter_user_list'] == true
-    	) {
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		global $current_user;
-    		$group_where = SecurityGroup::getGroupUsersWhere($current_user->id);
-    		//$group_where = "user_name = 'admin'";
-    		if(empty($where))
-    		{
-    			$where = " (".$group_where.") ";
-    		} else {
-    			$where .= " AND (".$group_where.") ";
-    		}
-    	}
-    	*/
-    	/* END - SECURITY GROUPS */
         $query = $this->create_new_list_query($order_by, $where,array(),array(), $show_deleted,'',false,null,$singleSelect);
         return $this->process_list_query($query, $row_offset, $limit, $max, $where);
     }
@@ -2899,21 +2827,7 @@ function save_relationship_changes($is_update, $exclude=array())
 				}
 				$query_array = $subquery['query_array'];
 				$select_position=strpos($query_array['select'],"SELECT");
-				/* BEGIN - SECURITY GROUPS */
-				/**
 				$distinct_position=strpos($query_array['select'],"DISTINCT");
-				*/
-				$distinct_position = false;
-				//for many reasons we need to use distinct in the subquery...make Sugar ignore it
-				if(substr_count(strtolower($query_array['select']), 'distinct') >
-					(substr_count(strtolower($query_array['select']), 'distinct secr.record_id')
-					+ substr_count(strtolower($query_array['select']), 'distinct secg.id')
-					+ substr_count(strtolower($query_array['select']), 'distinct sec.user_id')
-					)
-				){
-					$distinct_position = true;
-				}
-				/* END - SECURITY GROUPS */	
 				if ($select_position !== false && $distinct_position!= false)
 				{
 					$query_rows = "( ".substr_replace($query_array['select'],"SELECT count(",$select_position,6). ")" .  $subquery['from_min'].$query_array['join']. $subquery['where'].' )';
@@ -3465,51 +3379,6 @@ function save_relationship_changes($is_update, $exclude=array())
 			$ret_array['from'].= " LEFT JOIN email_addr_bean_rel on {$this->table_name}.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module='{$this->module_dir}' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ";
 		}
 	}
-
-		/* BEGIN - SECURITY GROUPS */    	
-		global $current_user, $sugar_config;
-    	if($this->module_dir == 'Users' && !is_admin($current_user)
-				&& isset($sugar_config['securitysuite_filter_user_list'])
-				&& $sugar_config['securitysuite_filter_user_list'] == true
-    	) {
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		$owner_where = $this->getOwnerWhere($current_user->id);
-    		$group_where = 'securitygroup_join.id is not null';
-    		if(empty($where))
-    		{
-    			$where = " (".  $owner_where." or ".$group_where.") ";
-    		} else {
-    			$where .= " AND (".  $owner_where." or ".$group_where.") ";
-    		}
-    		$securitygroup_join .= SecurityGroup::getGroupUsersJoin($current_user->id);
-    		$ret_array['from'] .= $securitygroup_join;
-    		$ret_array['from_min'] .= $securitygroup_join;
-			if(!$singleSelect)
-			{
-    			$ret_array['secondary_from'] .= $securitygroup_join;
-    		}
-    	} else 
-    	if($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, 'list') )
-    	{
-			require_once('modules/SecurityGroups/SecurityGroup.php');
-    		global $current_user;
-    		$owner_where = $this->getOwnerWhere($current_user->id);
-    		$group_where = 'securitygroup_join.id is not null';
-    		if(empty($where))
-    		{
-    			$where = " (".  $owner_where." or ".$group_where.") ";
-    		} else {
-    			$where .= " AND (".  $owner_where." or ".$group_where.") ";
-    		}
-    		$securitygroup_join = SecurityGroup::getGroupJoin($this->table_name,$this->module_dir,$current_user->id);
-    		$ret_array['from'] .= $securitygroup_join;
-    		$ret_array['from_min'] .= $securitygroup_join;
-			if(!$singleSelect)
-			{
-    			$ret_array['secondary_from'] .= $securitygroup_join;
-    		}
-		}
-    	/* END - SECURITY GROUPS */
 		
         $where_auto = '1=1';
         if($show_deleted == 0)
@@ -3861,21 +3730,8 @@ function save_relationship_changes($is_update, $exclude=array())
         {
             $query_row_count = $query;
         }
-		/* BEGIN - SECURITY GROUPS */
-		/**
         $distinct_position=strpos($query_row_count,"DISTINCT");
-		*/
-		$distinct_position = false;
-		//for many reasons we need to use distinct in the subquery...make Sugar ignore it
-		if(substr_count(strtolower($query_row_count), 'distinct') >
-			(substr_count(strtolower($query_row_count), 'distinct secr.record_id')
-			+ substr_count(strtolower($query_row_count), 'distinct secg.id')
-			+ substr_count(strtolower($query_row_count), 'distinct sec.user_id')
-			)
-		){
-			$distinct_position = true;
-		}
-		/* END - SECURITY GROUPS */	
+
         if ($distinct_position!= false)
         {
             $use_count_query=true;
@@ -4770,6 +4626,19 @@ function save_relationship_changes($is_update, $exclude=array())
 // tjy: no need to do this str_replace as the changes in 29994 for ListViewGeneric.tpl for translation handle this now
 //				}elseif(!empty($value['type']) && $value['type'] == 'multienum'&& empty($value['function'])){
 //					$return_array[strtoupper($field)] = str_replace('^,^', ', ', $this->$field );
+// CAMBIO GCOOP                
+                }elseif (((!empty($value['type']) && ($value['type'] == 'enum' || $value['type'] == 'radioenum') ))  && !empty($value['function']) && !isset($value['function']['returns'])){
+                    $function = $value['function'];
+                    $function = (is_array($function) && isset($function['name']))
+                        ? $value['function']['name']
+                        : $value['function'];
+                    if (!empty($value['function']['include']))
+                    {
+                        require_once($value['function']['include']);
+                    }
+                    $options = $function($this, $value['name'], $this->$field, 'ListView');
+                    $return_array[$cache[$field]] = $options[$this->$field]; 
+// FIN CAMBIO GCOOP                
                 }elseif(!empty($value['custom_module']) && $value['type'] != 'currency'){
 //					$this->format_field($value);
                     $return_array[$cache[$field]] = $this->$field;
@@ -5179,66 +5048,19 @@ function save_relationship_changes($is_update, $exclude=array())
     * @param $view string required, the view to determine access for i.e. DetailView, ListView...
     * @param $is_owner bool optional, this is part of the ACL check if the current user is an owner they will receive different access
     */
-	/* BEGIN - SECURITY GROUPS - aclaccess */  
-    function ACLAccess($view,$is_owner='not_set',$in_group='not_set')
+    function ACLAccess($view,$is_owner='not_set')
     {
         global $current_user;
         if($current_user->isAdminForModule($this->getACLCategory())) {
             return true;
         }
         $not_set = false;
-    	if($is_owner === 'not_set') //eggsurplus: should be ===
+        if($is_owner == 'not_set')
         {
             $not_set = true;
             $is_owner = $this->isOwner($current_user->id);
         }
-		// DJM - OBS Customizations - May 2009
-		// Moved this code to convert to lowercase from below.
-		// Added new action variable.
-		$view = strtolower($view);
-		$action = '';
-		// DJM - OBS Customizations - END CHANGE
-    	if($in_group === 'not_set')
-    	{
-			require_once("modules/SecurityGroups/SecurityGroup.php");
-			// DJM - OBS Customizations - May 2009
-			// Added the following switch statement to convert the view
-			// into an action value.  As per the switch below.
-			// Added the action parameter to the groupHasAccess call.
-    			switch ($view)
-    			{
-    				case 'list':
-    				case 'index':
-    				case 'listview':
-    					$action = "list";
-					break;
-    				case 'edit':
-    				case 'save':
-		    		case 'popupeditview':
- 		   		case 'editview':
-  		  			$action = "edit";
-					break;
- 		   		case 'view':
- 		   		case 'detail':
- 		   		case 'detailview':
- 		   			$action = "view";
-					break;
- 		   		case 'delete':
- 		   			$action = "delete" ;
-					break;
- 		   		case 'export':
- 		   			$action = "export";
-					break;
- 		   		case 'import':
-  		  			$action = "import";
-					break;
-				default:
-					$action = "";
-					break;
-    			}
-			$in_group = SecurityGroup::groupHasAccess($this->module_dir,$this->id, $action); 
-			// DJM - OBS Customizations - END CHANGE
-    	}
+
         //if we don't implent acls return true
         if(!$this->bean_implements('ACL'))
         return true;
@@ -5248,7 +5070,7 @@ function save_relationship_changes($is_update, $exclude=array())
             case 'list':
             case 'index':
             case 'listview':
-    			return ACLController::checkAccess($this->module_dir,'list', true, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'list', true);
             case 'edit':
             case 'save':
                 if( !$is_owner && $not_set && !empty($this->id)){
@@ -5263,22 +5085,21 @@ function save_relationship_changes($is_update, $exclude=array())
                 }
             case 'popupeditview':
             case 'editview':
-    			return ACLController::checkAccess($this->module_dir,'edit', $is_owner, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'edit', $is_owner, $this->acltype);
             case 'view':
             case 'detail':
             case 'detailview':
-    			return ACLController::checkAccess($this->module_dir,'view', $is_owner, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'view', $is_owner, $this->acltype);
             case 'delete':
-    			return ACLController::checkAccess($this->module_dir,'delete', $is_owner, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'delete', $is_owner, $this->acltype);
             case 'export':
-    			return ACLController::checkAccess($this->module_dir,'export', $is_owner, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'export', $is_owner, $this->acltype);
             case 'import':
-    			return ACLController::checkAccess($this->module_dir,'import', true, $this->acltype, $in_group);
+                return ACLController::checkAccess($this->module_dir,'import', true, $this->acltype);
         }
         //if it is not one of the above views then it should be implemented on the page level
         return true;
     }
-    /* END - SECURITY GROUPS */
     /**
     * Returns true of false if the user_id passed is the owner
     *
@@ -5686,4 +5507,22 @@ function save_relationship_changes($is_update, $exclude=array())
 	{
 		return $this->create_new_list_query($order_by, $where, array(), array(), 0, '', false, $this, true, true);
 	}
+    //Start Gcoop changes
+
+    public function notificar($description, $name='Info')
+    {
+        global $current_user;
+        $bean = loadBean('gcoop_notificaciones');
+        $bean->parent_type=$this->table_name;
+        $bean->parent_id = $this->id;
+        $bean->name = $name;
+        $bean->description = $description;
+        $bean->created_by = $current_user->id;
+        $bean->save();
+    } 
+    public function get_email_body()
+    {
+        return "Mail body is undefined";
+    }
+    //End Gcoop changes
 }
